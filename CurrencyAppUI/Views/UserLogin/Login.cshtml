@@ -1,0 +1,32 @@
+﻿@model CurrencyAppUI.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h2>Login Page</h2>
+<div class="container">
+    <form asp-controller="UserLogin" asp-action="LoginUser" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <input type="email" asp-for="Email" class="form-control" placeholder="Email" required>
+                <span asp-validation-for="Email" class="text-danger"></span>
+
+            </div>
+
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <input type="password" asp-for="Password" class="form-control" placeholder="Password" required>
+                <span asp-validation-for="Password" class="text-danger"></span>
+
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
