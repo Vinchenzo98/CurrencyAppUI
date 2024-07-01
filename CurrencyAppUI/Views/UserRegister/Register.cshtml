@@ -1,0 +1,51 @@
+﻿
+@model CurrencyAppUI.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Register Page</h2>
+<div class="container">
+    <form asp-controller="UserRegister" asp-action="RegisterUser" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <input type="text" asp-for="FirstName" class="form-control" placeholder="First Name" required>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <input type="text" asp-for="LastName" class="form-control" placeholder="Last Name" required>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <input type="text" asp-for="Mobile" class="form-control" placeholder="Mobile" required>
+                <span asp-validation-for="Mobile" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <input type="text" asp-for="UserTag" class="form-control" placeholder="User Tag" required>
+                <span asp-validation-for="UserTag" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <input type="email" asp-for="Email" class="form-control" placeholder="Email" required>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <input type="password" asp-for="Password" class="form-control" placeholder="Password" required>
+                <span asp-validation-for="Password" class="text-danger"></span>
+
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+
+    </form>
+</div>
