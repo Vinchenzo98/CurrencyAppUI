@@ -39,15 +39,15 @@ namespace CurrencyAppUI.Controllers
                 return View("Login");
             }
 
-            var json = JsonConvert.SerializeObject(loginUser);
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("/api/UserLogin/login", data);
+            var userJson = JsonConvert.SerializeObject(loginUser);
+            var userData = new StringContent(userJson, Encoding.UTF8, "application/json");
+            var userResponse = await _client.PostAsync("/api/UserLogin/login", userData);
 
-            if (response.IsSuccessStatusCode)
+            if (userResponse.IsSuccessStatusCode)
             {
-                var userDto = await response.Content.ReadFromJsonAsync<UserViewModel>();
+                var userDto = await userResponse.Content.ReadFromJsonAsync<UserViewModel>();
                 HttpContext.Session.SetString("UserJwt", userDto.Token);
-
+                TempData["UserTag"] = userDto.UserTag;
                 return RedirectToAction("Profile", "UserProfile");
             }
             else
