@@ -2,8 +2,8 @@
 {
     public class UserTransactionResponse
     {
-        public string Amount { get; set; }
-        public string CurrencyTag { get; set; }
+        public decimal? Amount { get; set; }
+        public string? CurrencyTag { get; set; }
         public DateTime TimeSent { get; set; }
     }
 }

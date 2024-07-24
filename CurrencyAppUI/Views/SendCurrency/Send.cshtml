@@ -1,0 +1,25 @@
+﻿@model CurrencyAppUI.Models.UserSendCurrencyRequest
+@{
+    //view bag to set currency here
+}
+
+<div class="container">
+    <form asp-controller="SendCurrency" asp-action="Send" method="Post">
+        <h2>Send USD</h2>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">$</span>
+            </div>
+            <input type="text" asp-for="userTag" class="form-control" placeholder="userTag" />
+        </div>
+        <div class="input-group mb-3">
+            <input type="number" asp-for="amount" class="form-control" placeholder="amount" />
+            <input type="text" asp-for="currencyTag" class="form-control" disabled value="" />
+            <button type="submit" class="btn btn-primary"></button>
+        </div>
+    </form>
+</div>
+
+
+
+

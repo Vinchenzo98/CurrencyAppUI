@@ -1,7 +1,6 @@
 using CurrencyAppUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using System.Text;
 
 namespace CurrencyAppUI.Controllers
@@ -9,19 +8,15 @@ namespace CurrencyAppUI.Controllers
     public class UserLoginController : Controller
     {
         private readonly HttpClient _client;
-        private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserLoginController(
             IHttpClientFactory clientFactory,
-            IConfiguration configuration
+            IHttpContextAccessor httpContextAccessor
             )
         {
+            _httpContextAccessor = httpContextAccessor;
             _client = clientFactory.CreateClient("CurrencyAppUIClient");
-            _configuration = configuration;
-            var baseUrl = _configuration["CurrnecyWebAPI:BaseUrl"];
-            _client.BaseAddress = new System.Uri(baseUrl);
-            _client.DefaultRequestHeaders.Accept.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         [HttpGet]
@@ -46,8 +41,9 @@ namespace CurrencyAppUI.Controllers
             if (userResponse.IsSuccessStatusCode)
             {
                 var userDto = await userResponse.Content.ReadFromJsonAsync<UserViewModel>();
-                HttpContext.Session.SetString("UserJwt", userDto.Token);
-                TempData["UserTag"] = userDto.UserTag;
+                _httpContextAccessor.HttpContext.Session.SetString("UserToken", userDto.Token);
+                _httpContextAccessor.HttpContext.Session.SetString("UserModel", JsonConvert.SerializeObject(userDto));
+
                 return RedirectToAction("Profile", "UserProfile");
             }
             else

@@ -1,6 +1,5 @@
 ﻿using CurrencyAppUI.Models;
 using CurrencyAppUI.Repo.Interface;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -10,32 +9,36 @@ namespace CurrencyAppUI.Repo
     public class CurrencyTransactionRepo : ICurrencyTransactionRepo
     {
         private readonly HttpClient _client;
-        private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ISession _session;
+        private readonly ILogger<CurrencyTransactionRepo> _logger;
+
         public CurrencyTransactionRepo(
             IHttpClientFactory clientFactory,
-            IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<CurrencyTransactionRepo> logger
             )
         {
             _httpContextAccessor = httpContextAccessor;
-            _session = _httpContextAccessor.HttpContext.Session;
             _client = clientFactory.CreateClient("CurrencyAppUIClient");
-            _configuration = configuration;
-            var baseUrl = _configuration["CurrnecyWebAPI:BaseUrl"];
-            _client.BaseAddress = new System.Uri(baseUrl);
-            _client.DefaultRequestHeaders.Accept.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _logger = logger;
         }
 
         public async Task<List<UserTransactionResponse>> GetAllTransactions(string currencyTag)
         {
-            var json = JsonConvert.SerializeObject(currencyTag);
+            var transactionRequest = new UserTransactionRequest
+            {
+                currencyTag = currencyTag
+            };
+            var json = JsonConvert.SerializeObject(transactionRequest);
+            var token = _httpContextAccessor.HttpContext.Session.GetString("UserToken");
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-            var apiEndpoint = "/api/UserTransacton/getAll";
-            _session.GetString("UserJwt");
+            var apiEndpoint = "/api/UserTransaction/getAll";
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             HttpResponseMessage response = await _client.PostAsync(apiEndpoint, data);
+            _logger.LogInformation($"The response content: {response.Content}");
+            _logger.LogInformation($"{response.StatusCode}");
+            _logger.LogInformation($"The request message: {response.RequestMessage}");
             response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
             {
@@ -50,10 +53,15 @@ namespace CurrencyAppUI.Repo
 
         public async Task<List<UserTransactionResponse>> GetInTransactions(string currencyTag)
         {
-            var json = JsonConvert.SerializeObject(currencyTag);
+            var transactionRequest = new UserTransactionRequest
+            {
+                currencyTag = currencyTag
+            };
+            var json = JsonConvert.SerializeObject(transactionRequest);
+            var token = _httpContextAccessor.HttpContext.Session.GetString("UserToken");
             var data = new StringContent(json, Encoding.UTF8, "application/json");
             var apiEndpoint = "/api/UserTransaction/getPositive";
-            _session.GetString("UserJwt");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await _client.PostAsync(apiEndpoint, data);
             response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
@@ -69,10 +77,15 @@ namespace CurrencyAppUI.Repo
 
         public async Task<List<UserTransactionResponse>> GetOutTransactions(string currencyTag)
         {
-            var json = JsonConvert.SerializeObject(currencyTag);
+            var transactionRequest = new UserTransactionRequest
+            {
+                currencyTag = currencyTag
+            };
+            var json = JsonConvert.SerializeObject(transactionRequest);
+            var token = _httpContextAccessor.HttpContext.Session.GetString("UserToken");
             var data = new StringContent(json, Encoding.UTF8, "application/json");
             var apiEndpoint = "/api/UserTransaction/getNegative";
-            _session.GetString("UserJwt");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await _client.PostAsync(apiEndpoint, data);
             response.EnsureSuccessStatusCode();
 

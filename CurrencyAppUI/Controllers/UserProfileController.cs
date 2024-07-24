@@ -1,41 +1,41 @@
 ﻿using CurrencyAppUI.Models;
 using CurrencyAppUI.Repo.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace CurrencyAppUI.Controllers
 {
     public class UserProfileController : Controller
     {
-        private readonly ICurrencyTransactionRepo _currencyTransactionRepo;
+        private readonly HttpClient _client;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IGetProfileAccountsRepo _profileAccountsRepo;
 
         public UserProfileController(
-            ICurrencyTransactionRepo currencyTransactionRepo,
-            IGetProfileAccountsRepo profileAccountsRepo
+            IGetProfileAccountsRepo profileAccountsRepo,
+             IHttpClientFactory clientFactory,
+            IHttpContextAccessor httpContextAccessor
             )
         {
-            _currencyTransactionRepo = currencyTransactionRepo;
             _profileAccountsRepo = profileAccountsRepo;
+            _httpContextAccessor = httpContextAccessor;
+            _client = clientFactory.CreateClient("CurrencyAppUIClient");
         }
 
         [HttpGet]
         public async Task<ActionResult> Profile()
         {
-            var userTag = TempData["UserTag"]?.ToString();
-            var currencyTag = TempData["currencyTag"]?.ToString();
-            var userViewModel = new UserViewModel { UserTag = userTag };
+            var userModelJson = _httpContextAccessor.HttpContext.Session.GetString("UserModel");
+            if (string.IsNullOrEmpty(userModelJson))
+            {
+                return RedirectToAction("Login", "UserLogin");
+            }
+            var userViewModel = JsonConvert.DeserializeObject<UserViewModel>(userModelJson);
             ViewData["Title"] = "Profile";
 
             var getUserAccounts = await _profileAccountsRepo.GetAccountTypeRepo();
 
-            var allTransactions = await _currencyTransactionRepo.GetAllTransactions(currencyTag);
-            var inTransactions = await _currencyTransactionRepo.GetInTransactions(currencyTag);
-            var outTransactions = await _currencyTransactionRepo.GetOutTransactions(currencyTag);
-
             userViewModel.AllAccounts = getUserAccounts;
-            userViewModel.AllTransactions = allTransactions;
-            userViewModel.InTransactions = inTransactions;
-            userViewModel.OutTransactions = outTransactions;
 
             return View(userViewModel);
         }

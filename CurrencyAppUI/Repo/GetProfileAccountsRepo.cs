@@ -8,37 +8,48 @@ namespace CurrencyAppUI.Repo
     public class GetProfileAccountsRepo : IGetProfileAccountsRepo
     {
         private readonly HttpClient _client;
-        private readonly IConfiguration _configuration;
+
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ISession _session;
+        private readonly ILogger<GetProfileAccountsRepo> _logger;
 
         public GetProfileAccountsRepo(
             IHttpClientFactory clientFactory,
-            IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<GetProfileAccountsRepo> logger
             )
         {
             _httpContextAccessor = httpContextAccessor;
-            _session = _httpContextAccessor.HttpContext.Session;
             _client = clientFactory.CreateClient("CurrencyAppUIClient");
-            _configuration = configuration;
-            var baseUrl = _configuration["CurrnecyWebAPI:BaseUrl"];
-            _client.BaseAddress = new System.Uri(baseUrl);
-            _client.DefaultRequestHeaders.Accept.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _logger = logger;
         }
 
         public async Task<List<AccountTypeResponse>> GetAccountTypeRepo()
         {
             var requestUrl = "/api/AccountType/get-accounts";
-            _session.GetString("UserJwt");
+            var token = _httpContextAccessor.HttpContext.Session.GetString("UserToken");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new UnauthorizedAccessException("User is not authenticated.");
+            }
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            Console.WriteLine($"Request headers: {_client.DefaultRequestHeaders}");
+
             HttpResponseMessage response = await _client.GetAsync(requestUrl);
+
+            _logger.LogInformation($"HttpGet {response}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Request failed with status code {response.StatusCode}");
+            }
+
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
+            var exchangeResponse = JsonConvert.DeserializeObject<List<AccountTypeResponse>>(responseContent);
 
-            var exchangeResponse = JsonConvert.DeserializeObject(responseContent);
-
-            return (List<AccountTypeResponse>)exchangeResponse;
+            return exchangeResponse;
         }
     }
 }
