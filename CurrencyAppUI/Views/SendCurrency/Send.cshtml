@@ -1,21 +1,29 @@
 ﻿@model CurrencyAppUI.Models.UserSendCurrencyRequest
 @{
-    //view bag to set currency here
+    var userTags = TempData["UserTagsList"] as List<UserViewModel>;
 }
 
 <div class="container">
-    <form asp-controller="SendCurrency" asp-action="Send" method="Post">
-        <h2>Send USD</h2>
+    <form asp-controller="SendCurrency" asp-action="UserSendCurrency" method="Post">
+        <h2>Send @Model.currencyTag</h2>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
-                <span class="input-group-text">$</span>
+                <span class="input-group-text">@Model.currencyTag</span>
             </div>
-            <input type="text" asp-for="userTag" class="form-control" placeholder="userTag" />
+            <select type="text" asp-for="userTag" class="form-control" placeholder="userTag">
+                @{
+                    foreach(var user in userTags)
+                    {
+                        <option>@user.UserTag</option>
+                    }
+                }
+            </select>
         </div>
         <div class="input-group mb-3">
             <input type="number" asp-for="amount" class="form-control" placeholder="amount" />
-            <input type="text" asp-for="currencyTag" class="form-control" disabled value="" />
-            <button type="submit" class="btn btn-primary"></button>
+            <input type="text" class="form-control" disabled value="@Model.currencyTag" />
+            <input type="hidden" asp-for="currencyTag" value="@Model.currencyTag" />
+            <button type="submit" class="btn btn-primary">Send</button>
         </div>
     </form>
 </div>

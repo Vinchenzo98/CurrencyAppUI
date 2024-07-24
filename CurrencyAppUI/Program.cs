@@ -14,6 +14,7 @@ builder.Logging.AddDebug();
 builder.Services.AddScoped<ICurrencyTransactionRepo, CurrencyTransactionRepo>();
 builder.Services.AddScoped<IGetProfileAccountsRepo, GetProfileAccountsRepo>();
 builder.Services.AddScoped<ICurrencyOperationsRepo, CurrencyOperationsRepo>();
+builder.Services.AddScoped<IGetUserListRepo, GetUserListRepo>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddControllersWithViews();

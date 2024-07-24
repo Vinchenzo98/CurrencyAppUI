@@ -14,13 +14,11 @@ namespace CurrencyAppUI.Repo
 
         public CurrencyOperationsRepo(
                 IHttpContextAccessor httpContextAccessor,
-                IHttpClientFactory clientFactory,
-                ILogger<CurrencyOperationsRepo> logger
+                IHttpClientFactory clientFactory
             )
         {
             _httpContextAccessor = httpContextAccessor;
             _client = clientFactory.CreateClient("CurrencyAppUIClient");
-            _logger = logger;
         }
 
         public async Task<UserOperationsResponse> DepositCurrency(UserDepositRequest userDepositRequest)
@@ -32,10 +30,6 @@ namespace CurrencyAppUI.Repo
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpResponseMessage response = await _client.PostAsync(apiEndpoint, data);
-
-            _logger.LogInformation($"The response content: {response.Content}");
-            _logger.LogInformation($"{response.StatusCode}");
-            _logger.LogInformation($"The request message: {response.RequestMessage}");
 
             response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
@@ -66,10 +60,6 @@ namespace CurrencyAppUI.Repo
 
             HttpResponseMessage response = await _client.PostAsync(apiEndpoint, data);
 
-            _logger.LogInformation($"The response content: {response.Content}");
-            _logger.LogInformation($"{response.StatusCode}");
-            _logger.LogInformation($"The request message: {response.RequestMessage}");
-
             response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
             {
@@ -92,10 +82,6 @@ namespace CurrencyAppUI.Repo
 
             HttpResponseMessage response = await _client.PostAsync(apiEndpoint, data);
 
-            _logger.LogInformation($"The response content: {response.Content}");
-            _logger.LogInformation($"{response.StatusCode}");
-            _logger.LogInformation($"The request message: {response.RequestMessage}");
-
             response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
             {
@@ -117,10 +103,6 @@ namespace CurrencyAppUI.Repo
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpResponseMessage response = await _client.PostAsync(apiEndpoint, data);
-
-            _logger.LogInformation($"The response content: {response.Content}");
-            _logger.LogInformation($"{response.StatusCode}");
-            _logger.LogInformation($"The request message: {response.RequestMessage}");
 
             response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
