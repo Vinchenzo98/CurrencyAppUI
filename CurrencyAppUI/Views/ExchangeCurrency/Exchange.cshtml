@@ -4,7 +4,7 @@
 }
 
 <div class="container">
-    <form asp-controller="ExchangeCurrency" asp-action="Exchange" method="Post">
+    <form asp-controller="ExchangeCurrency" asp-action="UserExchangeCurrency" method="Post">
         <h2>Exchnage @Model.baseCurrency</h2>
         <div class="input-group mb-3">
             <div class="input-group-prepend">
@@ -21,9 +21,9 @@
         </div>
         <div class="input-group mb-3">
             <input type="number" asp-for="amount" class="form-control" placeholder="amount" />
-            <input type="text" class="form-control" disabled value="@Model.baseCurrency" />
+            <input type="text" class="form-control" disabled value="@Model.baseCurrency" placeholder="Convert from"/>
             <input type="hidden" asp-for="baseCurrency" value="@Model.baseCurrency" />
-            <input type="text" class="form-control" disabled value="@Model.targetCurrency" />
+            <input type="text" class="form-control" disabled value="@Model.targetCurrency" placeholder="Convert to @Model.targetCurrency"/>
             <input type="hidden" asp-for="targetCurrency" value="@Model.targetCurrency" />
             <button type="submit" class="btn btn-primary">Send</button>
         </div>
