@@ -52,12 +52,11 @@
    
     @if(Model.AllAccounts.Count <= 2)
     {
+       
         <div class="card">
             <div class="card-body">
                 <h3>Add Account</h3>
-                <button class="btn btn-primary" type="submit">
-                    Add
-                </button>
+                <a class="btn btn-primary"href="@Url.Action("CreateAccount", "UserAccount")">Add</a>       
             </div>
         </div>
     }

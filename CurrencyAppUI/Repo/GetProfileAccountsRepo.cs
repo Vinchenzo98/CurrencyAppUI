@@ -2,6 +2,7 @@
 using CurrencyAppUI.Repo.Interface;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace CurrencyAppUI.Repo
 {
@@ -50,6 +51,38 @@ namespace CurrencyAppUI.Repo
             var exchangeResponse = JsonConvert.DeserializeObject<List<AccountTypeResponse>>(responseContent);
 
             return exchangeResponse;
+        }
+
+        public async Task<AccountTypeResponse> CreateAccountRepo(AccountTypeRequest accountTypeRequest)
+        {
+            var requestUrl = "/api/AccountType/create-account";
+            var token = _httpContextAccessor.HttpContext.Session.GetString("UserToken");
+            var json = JsonConvert.SerializeObject(accountTypeRequest);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new UnauthorizedAccessException("User is not authenticated.");
+            }
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            Console.WriteLine($"Request headers: {_client.DefaultRequestHeaders}");
+
+            HttpResponseMessage response = await _client.PostAsync(requestUrl, data);
+
+            _logger.LogInformation($"HttpPost {response}");
+
+            response.EnsureSuccessStatusCode();
+            if (response.IsSuccessStatusCode)
+            {
+                var currencySent = await response.Content.ReadFromJsonAsync<AccountTypeResponse>();
+                return currencySent;
+            }
+            else
+            {
+                return new AccountTypeResponse();
+            }
+
         }
     }
 }

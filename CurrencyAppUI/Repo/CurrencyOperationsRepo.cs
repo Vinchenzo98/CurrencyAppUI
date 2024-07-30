@@ -43,16 +43,10 @@ namespace CurrencyAppUI.Repo
             }
         }
 
-        public async Task<UserOperationsResponse> ExchangeCurrency(string amount, string baseCurrency, string targetCurrency)
+        public async Task<UserOperationsResponse> ExchangeCurrency(UserCurrencyExchangeRequest exchangeRequest)
         {
-            var sendCurrencyRequest = new UserCurrencyExchangeRequest
-            {
-                amount = amount,
-                baseCurrency = baseCurrency,
-                targetCurrency = targetCurrency
-            };
 
-            var json = JsonConvert.SerializeObject(sendCurrencyRequest);
+            var json = JsonConvert.SerializeObject(exchangeRequest);
             var token = _httpContextAccessor.HttpContext.Session.GetString("UserToken");
             var data = new StringContent(json, Encoding.UTF8, "application/json");
             var apiEndpoint = "/api/CurrencyExchange/exchange";

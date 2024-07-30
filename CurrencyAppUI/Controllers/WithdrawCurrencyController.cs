@@ -28,37 +28,22 @@ namespace CurrencyAppUI.Controllers
             _profileAccountsRepo = getProfileAccountsRepo;
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Withdraw(UserWithdrawRequest userWithdrawRequest)
+        public async Task<ActionResult> Withdraw()
         {
-            var userModelJson = _contextAccessor.HttpContext.Session.GetString("UserModel");
-            if (string.IsNullOrEmpty(userModelJson))
+            var currency = TempData["CurrencyTag"].ToString();
+            var userWithdrawRequest = new UserWithdrawRequest
             {
-                return RedirectToAction("Profile", "UserProfile");
-            }
+                currencyTag = currency
+            };
 
-            var getCurrencyTag = await _profileAccountsRepo.GetAccountTypeRepo();
+            return View(userWithdrawRequest);
+        }
 
-            if (getCurrencyTag == null)
-            {
-                return RedirectToAction("Profile", "UserProfile");
-            }
-
-            var userViewModel = JsonConvert.DeserializeObject<UserViewModel>(userModelJson);
-
-            await _currencyOperationsRepo.WithdrawCurrency(userWithdrawRequest);
-
-            var currencyTag = getCurrencyTag.FirstOrDefault(ct => ct.AccountType == userWithdrawRequest.currencyTag);
-
-            var allTransactions = await _currencyTransactionRepo.GetAllTransactions(currencyTag.AccountType);
-            var inTransactions = await _currencyTransactionRepo.GetInTransactions(currencyTag.AccountType);
-            var outTransactions = await _currencyTransactionRepo.GetOutTransactions(currencyTag.AccountType);
-
-            userViewModel.AllTransactions = allTransactions;
-            userViewModel.InTransactions = inTransactions;
-            userViewModel.OutTransactions = outTransactions;
-
-            return View(userViewModel);
+        [HttpPost]
+        public async Task<ActionResult> UserWithdrawCurrency(UserWithdrawRequest userWithdraw)
+        {
+            await _currencyOperationsRepo.WithdrawCurrency(userWithdraw);
+            return RedirectToAction(userWithdraw.currencyTag, "UserAccount");
         }
     }
 }

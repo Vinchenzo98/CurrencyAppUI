@@ -28,37 +28,22 @@ namespace CurrencyAppUI.Controllers
             _profileAccountsRepo = getProfileAccountsRepo;
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Deposit(UserDepositRequest userDepositRequest)
+        public async Task<ActionResult> Deposit()
         {
-            var userModelJson = _contextAccessor.HttpContext.Session.GetString("UserModel");
-            if (string.IsNullOrEmpty(userModelJson))
+            var currency = TempData["CurrencyTag"].ToString();
+            var userDepositRequest = new UserDepositRequest
             {
-                return RedirectToAction("Profile", "UserProfile");
-            }
+                currencyTag = currency
+            };
 
-            var getCurrencyTag = await _profileAccountsRepo.GetAccountTypeRepo();
+            return View(userDepositRequest);
+        }
 
-            if (getCurrencyTag == null)
-            {
-                return RedirectToAction("Profile", "UserProfile");
-            }
-
-            var userViewModel = JsonConvert.DeserializeObject<UserViewModel>(userModelJson);
-
-            await _currencyOperationsRepo.DepositCurrency(userDepositRequest);
-
-            var currencyTag = getCurrencyTag.FirstOrDefault(ct => ct.AccountType == userDepositRequest.currencyTag);
-
-            var allTransactions = await _currencyTransactionRepo.GetAllTransactions(currencyTag.AccountType);
-            var inTransactions = await _currencyTransactionRepo.GetInTransactions(currencyTag.AccountType);
-            var outTransactions = await _currencyTransactionRepo.GetOutTransactions(currencyTag.AccountType);
-
-            userViewModel.AllTransactions = allTransactions;
-            userViewModel.InTransactions = inTransactions;
-            userViewModel.OutTransactions = outTransactions;
-
-            return View(userViewModel);
+        [HttpPost]
+        public async Task<ActionResult> UserDepositCurrency(UserDepositRequest userDeposit)
+        {
+            await _currencyOperationsRepo.DepositCurrency(userDeposit);
+            return RedirectToAction(userDeposit.currencyTag, "UserAccount");
         }
     }
 }

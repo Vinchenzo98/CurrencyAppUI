@@ -6,7 +6,7 @@ namespace CurrencyAppUI.Repo.Interface
     {
         Task<UserOperationsResponse> DepositCurrency(UserDepositRequest userDepositRequest);
 
-        Task<UserOperationsResponse> ExchangeCurrency(string amount, string baseCurrency, string targetCurrency);
+        Task<UserOperationsResponse> ExchangeCurrency(UserCurrencyExchangeRequest userCurrencyExchangeRequest);
 
         Task<UserOperationsResponse> SendCurrency(UserSendCurrencyRequest sendCurrencyRequest);
 

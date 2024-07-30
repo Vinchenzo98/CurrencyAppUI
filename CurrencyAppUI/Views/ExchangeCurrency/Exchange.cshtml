@@ -1,5 +1,31 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model CurrencyAppUI.Models.UserCurrencyExchangeRequest
 @{
+    var currencyTags = TempData["ExchangeAccount"] as List<AccountTypeResponse>;
 }
+
+<div class="container">
+    <form asp-controller="ExchangeCurrency" asp-action="Exchange" method="Post">
+        <h2>Exchnage @Model.baseCurrency</h2>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">@Model.baseCurrency</span>
+            </div>
+            <select type="text" asp-for="targetCurrency" class="form-control" placeholder="userTag">
+                @{
+                    foreach (var currency in currencyTags)
+                    {
+                        <option>@currency.AccountType</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group mb-3">
+            <input type="number" asp-for="amount" class="form-control" placeholder="amount" />
+            <input type="text" class="form-control" disabled value="@Model.baseCurrency" />
+            <input type="hidden" asp-for="baseCurrency" value="@Model.baseCurrency" />
+            <input type="text" class="form-control" disabled value="@Model.targetCurrency" />
+            <input type="hidden" asp-for="targetCurrency" value="@Model.targetCurrency" />
+            <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+    </form>
+</div>

@@ -1,4 +1,5 @@
 ﻿using CurrencyAppUI.Models;
+using CurrencyAppUI.Repo;
 using CurrencyAppUI.Repo.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ namespace CurrencyAppUI.Controllers
         private readonly ICurrencyTransactionRepo _currencyTransactionRepo;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IGetProfileAccountsRepo _profileAccountsRepo;
+        
 
         public UserAccountController(
             IHttpClientFactory clientFactory,
@@ -23,6 +25,19 @@ namespace CurrencyAppUI.Controllers
             _client = clientFactory.CreateClient("CurrencyAppUIClient");
             _currencyTransactionRepo = currencyTransactionRepo;
             _profileAccountsRepo = getProfileAccountsRepo;
+        }
+
+        public async Task<ActionResult> CreateAccount()
+        {
+            var model = new AccountTypeRequest();
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CreationRequest(AccountTypeRequest accountTypeRequest)
+        {
+            await _profileAccountsRepo.CreateAccountRepo(accountTypeRequest);
+            return RedirectToAction("Profile", "UserProfile");
         }
 
         [HttpGet]

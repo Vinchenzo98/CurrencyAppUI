@@ -1,0 +1,15 @@
+﻿@model CurrencyAppUI.Models.AccountTypeRequest
+@{
+   // var unCreatedAccounts = TempData["unCreatedAccounts"] as List<UserViewModel>;
+}
+
+<div class="container">
+    <form asp-controller="UserAccount" asp-action="CreationRequest" method="Post">
+        <h2>Create Account</h2>
+      
+        <div class="input-group mb-3">
+            <input type="text" asp-for="currencyTag" class="form-control" placeholder="Enter Currency" />
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </form>
+</div>
